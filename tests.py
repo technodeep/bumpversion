@@ -26,13 +26,13 @@ usage: py.test [-h] [--config-file FILE] [--parse REGEX] [--serialize FORMAT]
                [--current-version VERSION] [--dry-run] --new-version VERSION
                [--commit | --no-commit] [--tag | --no-tag]
                [--message COMMIT_MSG]
-               part file [file ...]
+               part file
 
 Bumps version strings
 
 positional arguments:
   part                  Part of the version to be bumped.
-  file                  Files to change
+  file                  File to change
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -73,7 +73,7 @@ files: file1 file2 file3""")
     assert "New version that should be in the files (default: 19)" in out
     assert "[--current-version VERSION]" in out
     assert "[--new-version VERSION]" in out
-    assert "[file [file ...]]" in out
+    assert "[file]" in out
 
 
 def test_missing_explicit_config_file(tmpdir):

@@ -272,21 +272,20 @@ def main(args=None):
 
     parser3.add_argument('part',
                          help='Part of the version to be bumped.')
-    parser3.add_argument('files', metavar='file',
-                         nargs='+' if len(files) == 0 else '*',
-                         help='Files to change', default=files)
+    parser3.add_argument('file', help='File to change',
+                         nargs=1 if len(files) == 0 else '?')
 
     args = parser3.parse_args(remaining_argv)
 
-    if len(args.files) is 0:
-        warnings.warn("No files specified")
+    if args.file:
+        files += args.file
 
     for vcs in VCS:
         if vcs.is_usable():
             vcs.assert_nondirty()
             break
 
-    for path in args.files:
+    for path in files:
         with open(path, 'r') as f:
             before = f.read()
 
@@ -299,7 +298,7 @@ def main(args=None):
             with open(path, 'w') as f:
                 f.write(after)
 
-    commit_files = args.files
+    commit_files = files
 
     if config:
         config.remove_option('bumpversion', 'new_version')
