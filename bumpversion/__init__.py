@@ -270,7 +270,14 @@ class Version(object):
 
         keys_needing_representation = set([])
         found_required = False
-        for k, v in self._parsed.items():
+        for k in self.order():
+            v = values[k]
+
+            if not isinstance(v, VersionPart):
+                # values coming from environment variables don't need
+                # representation
+                continue
+
             if not v.is_optional():
                 found_required = True
                 keys_needing_representation.add(k)
