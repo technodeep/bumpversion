@@ -403,7 +403,7 @@ def main(original_args=None):
             except NoOptionError:
                 pass  # no default value then ;)
 
-        for boolvaluename in ("commit", "tag", "dry_run"):
+        for boolvaluename in ("commit", "tag", "dry_run", "update_time",):
             try:
                 defaults[boolvaluename] = config.getboolean(
                     "bumpversion", boolvaluename)
@@ -426,6 +426,14 @@ def main(original_args=None):
                          action=DiscardDefaultIfSpecifiedAppendAction,
                          help='How to format what is parsed back to a version',
                          default=defaults.get("serialize", [str('{major}.{minor}.{patch}')]))
+
+    dategroup = parser2.add_mutually_exclusive_group()
+
+    dategroup.add_argument('--update-time', action='store_true', dest="update_time",
+                           help='Update timestamp in version files', default=defaults.get("update_time", False))
+    dategroup.add_argument('--no-update-time', action='store_false', dest="update_time",
+                           help='Do not update timestamp in version files', default=argparse.SUPPRESS)
+
 
     known_args, remaining_argv = parser2.parse_known_args(args)
 
@@ -474,6 +482,13 @@ def main(original_args=None):
     parser3.add_argument('--new-version', metavar='VERSION',
                          help='New version that should be in the files',
                          required=not 'new_version' in defaults)
+
+    parser3.add_argument('--time-format', metavar='TIME_FORMAT',
+                         help='Format for timestamp (only usable with --update-time)',
+                         default=defaults.get('time_format', '%Y-%m-%d %H:%M:%S'))
+    parser3.add_argument('--current-time', metavar='TIME',
+                         help='Timestamp that needs to be updated (only usable with --update-time)',
+                         required=(defaults.get("update_time", False)) and not 'current_time' in defaults)
 
     commitgroup = parser3.add_mutually_exclusive_group()
 
@@ -533,7 +548,7 @@ def main(original_args=None):
         # assert type(args.current_version) == bytes
         # assert type(args.new_version) == bytes
 
-        after = before.replace(args.current_version, args.new_version)
+        after = before.replace(args.current_version, args.new_version).replace(args.current_time, time_context.get('utcnow').strftime(args.time_format))
 
         if not args.dry_run:
             with io.open(path, 'wt', encoding='utf-8') as f:
@@ -545,6 +560,8 @@ def main(original_args=None):
         config.remove_option('bumpversion', 'new_version')
 
         config.set('bumpversion', 'current_version', args.new_version)
+        if args.update_time:
+            config.set('bumpversion', 'current_time', time_context.get('utcnow').strftime(args.time_format))
 
         if not args.dry_run:
             s = StringIO()
