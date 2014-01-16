@@ -27,9 +27,10 @@ xfail_if_no_hg = pytest.mark.xfail(
 
 EXPECTED_USAGE = ("""
 usage: py.test [-h] [--config-file FILE] [--parse REGEX] [--serialize FORMAT]
-               [--current-version VERSION] [--dry-run] --new-version VERSION
-               [--commit | --no-commit] [--tag | --no-tag]
-               [--tag-name TAG_NAME] [--message COMMIT_MSG]
+               [--update-time | --no-update-time] [--current-version VERSION]
+               [--dry-run] --new-version VERSION [--time-format TIME_FORMAT]
+               [--current-time TIME] [--commit | --no-commit]
+               [--tag | --no-tag] [--tag-name TAG_NAME] [--message COMMIT_MSG]
                part [file [file ...]]
 
 %s
@@ -46,12 +47,20 @@ optional arguments:
                         (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+))
   --serialize FORMAT    How to format what is parsed back to a version
                         (default: ['{major}.{minor}.{patch}'])
+  --update-time         Update timestamp in version files (default: False)
+  --no-update-time      Do not update timestamp in version files (default:
+                        False)
   --current-version VERSION
                         Version that needs to be updated (default: None)
   --dry-run, -n         Don't write any files, just pretend. (default: False)
   --new-version VERSION
                         New version that should be in the files (default:
                         None)
+  --time-format TIME_FORMAT
+                        Format for timestamp (only usable with --update-time)
+                        (default: %%Y-%%m-%%d %%H:%%M:%%S)
+  --current-time TIME   Timestamp that needs to be updated (only usable with
+                        --update-time) (default: None)
   --commit              Commit to version control (default: False)
   --no-commit           Do not commit to version control
   --tag                 Create a tag in version control (default: False)

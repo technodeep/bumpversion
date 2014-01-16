@@ -548,7 +548,9 @@ def main(original_args=None):
         # assert type(args.current_version) == bytes
         # assert type(args.new_version) == bytes
 
-        after = before.replace(args.current_version, args.new_version).replace(args.current_time, time_context.get('utcnow').strftime(args.time_format))
+        after = before.replace(args.current_version, args.new_version)
+        if args.update_time:
+            after = after.replace(args.current_time, time_context.get('utcnow').strftime(args.time_format))
 
         if not args.dry_run:
             with io.open(path, 'wt', encoding='utf-8') as f:
