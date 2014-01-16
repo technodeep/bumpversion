@@ -16,13 +16,13 @@ from bumpversion import main, DESCRIPTION
 environ['HGENCODING'] = 'UTF-8'
 
 xfail_if_no_git = pytest.mark.xfail(
-  subprocess.call(["git", "--help"], shell=True) != 1,
-  reason="git is not installed"
+    subprocess.call(["git", "--help"], shell=True) != 1,
+    reason="git is not installed"
 )
 
 xfail_if_no_hg = pytest.mark.xfail(
-  subprocess.call(["hg", "--help"], shell=True) != 0,
-  reason="hg is not installed"
+    subprocess.call(["hg", "--help"], shell=True) != 0,
+    reason="hg is not installed"
 )
 
 EXPECTED_USAGE = ("""
