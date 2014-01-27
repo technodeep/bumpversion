@@ -403,7 +403,7 @@ def main(original_args=None):
             except NoOptionError:
                 pass  # no default value then ;)
 
-        for boolvaluename in ("commit", "tag", "dry_run", "update_time",):
+        for boolvaluename in ("commit", "tag", "dry_run", "update_time", "ignore_dirty"):
             try:
                 defaults[boolvaluename] = config.getboolean(
                     "bumpversion", boolvaluename)
@@ -433,6 +433,9 @@ def main(original_args=None):
                            help='Update timestamp in version files', default=defaults.get("update_time", False))
     dategroup.add_argument('--no-update-time', action='store_false', dest="update_time",
                            help='Do not update timestamp in version files', default=argparse.SUPPRESS)
+
+    parser2.add_argument('--ignore-dirty', action='store_true',
+                         default=defaults.get("ignore_dirty", False), help="Ignore repo dirty state")
 
 
     known_args, remaining_argv = parser2.parse_known_args(args)
@@ -527,10 +530,11 @@ def main(original_args=None):
 
     files = files or positionals[1:]
 
-    for vcs in VCS:
-        if vcs.is_usable():
-            vcs.assert_nondirty()
-            break
+    if not defaults["ignore_dirty"]:
+        for vcs in VCS:
+            if vcs.is_usable():
+                vcs.assert_nondirty()
+                break
 
     # make sure files exist and contain version string
     for path in files:
